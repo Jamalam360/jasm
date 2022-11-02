@@ -1,2 +1,3 @@
 /interpreter/target
 /vscode_plugin/node_modules
+/**/jasm-*.vsix
