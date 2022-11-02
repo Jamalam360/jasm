@@ -1,0 +1,25 @@
+{
+  "name": "jasm",
+  "displayName": "jasm",
+  "description": "Adds support for the JASM language.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.73.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "jasm",
+      "aliases": ["JASM", "jasm"],
+      "extensions": [".jasm"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "jasm",
+      "scopeName": "source.jasm",
+      "path": "./syntaxes/jasm.tmLanguage.json"
+    }]
+  }
+}

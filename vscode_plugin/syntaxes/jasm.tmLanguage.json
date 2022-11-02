@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "JASM",
+  "patterns": [
+    {
+      "include": "#instructions"
+    },
+    {
+      "include": "#addresses"
+    },
+    {
+      "include": "#literals"
+    },
+    {
+      "include": "#comments"
+    }
+  ],
+  "repository": {
+    "instructions": {
+      "patterns": [{
+        "name": "keyword.control.jasm",
+        "match": "^\\s*OUT|CUT|CIN|DMP|RTN|SEA|SET|ADD|SUB|MUL|DIV|LAB|CEQ|BNE|BEQ|JMP"
+      }]
+    },
+    "addresses": {
+      "patterns": [{
+        "name": "variable.parameter.jasm",
+        "match": "\\*(?:0x[0-9a-fA-F]{2}(?:[0-9a-fA-F]{2})?)|\\*(0b[01]{8}(?:[01]{8})?)"
+      }]
+    },
+    "literals": {
+      "patterns": [{
+        "name": "constant.numeric.jasm",
+        "match": "(?:0x[0-9a-fA-F]{2}(?:[0-9a-fA-F]{2})?)|(0b[01]{8}(?:[01]{8})?)"
+      }]
+    },
+    "comments": {
+      "patterns": [{
+        "name": "comment.line.jasm",
+        "match": ";.*$"
+      }]
+    }
+  },
+  "scopeName": "source.jasm"
+}
