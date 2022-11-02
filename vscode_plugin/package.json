@@ -10,16 +10,25 @@
     "Programming Languages"
   ],
   "contributes": {
-    "languages": [{
-      "id": "jasm",
-      "aliases": ["JASM", "jasm"],
-      "extensions": [".jasm"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "jasm",
-      "scopeName": "source.jasm",
-      "path": "./syntaxes/jasm.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "jasm",
+        "aliases": [
+          "JASM",
+          "jasm"
+        ],
+        "extensions": [
+          ".jasm"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jasm",
+        "scopeName": "source.jasm",
+        "path": "./syntaxes/jasm.tmLanguage.json"
+      }
+    ]
   }
 }
