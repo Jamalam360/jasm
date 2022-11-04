@@ -19,7 +19,7 @@
     "instructions": {
       "patterns": [{
         "name": "keyword.control.jasm",
-        "match": "^\\s*OUT|CUT|CIN|DMP|RTN|SEA|SET|ADD|SUB|MUL|DIV|LAB|CEQ|BNE|BEQ|JMP"
+        "match": "^\\s*OUT|CUT|CIN|DMP|RTN|SEA|SET|ADD|SUB|MUL|DIV|LAB|CEQ|GTN|LTN|GTE|LTE|BNE|BEQ|JMP"
       }]
     },
     "addresses": {

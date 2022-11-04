@@ -1,3 +1,6 @@
 /interpreter/target
 /vscode_plugin/node_modules
+# Ignore bundled vscode package
 /**/jasm-*.vsix
+# Ignore compiled JASM binary files
+*.jasmb
