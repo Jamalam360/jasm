@@ -6,16 +6,31 @@ use std::{
 };
 
 use crate::{
-    instructions::{get_literal_value, Instruction},
+    instructions::{get_literal_value, Instruction, Value},
     Memory, ADDRESS_ADDRESS, COMPARISON_ADDRESS,
 };
 
-pub fn interpret(
-    instructions: &Vec<Instruction>,
-    memory: &mut Memory,
-    labels: &mut HashMap<u16, usize>,
-) -> Result<u16> {
+pub fn interpret(memory: &mut Memory, instructions: &mut Vec<Instruction>) -> Result<u16> {
+    let labels: HashMap<u16, usize> = instructions
+        .iter()
+        .enumerate()
+        .filter_map(|(i, instruction)| match instruction {
+            Instruction::Label(Value::Literal(literal)) => Some((*literal, i)),
+            _ => None,
+        })
+        .collect();
+
+    let functions: HashMap<u16, usize> = instructions
+        .iter()
+        .enumerate()
+        .filter_map(|(i, instruction)| match instruction {
+            Instruction::Function(Value::Literal(literal)) => Some((*literal, i)),
+            _ => None,
+        })
+        .collect();
+
     let mut instruction_index = 0;
+    let mut meth_calls: Vec<u16> = Vec::new();
     let mut caller_stack: Vec<usize> = Vec::new();
     let term = console::Term::stdout();
 
@@ -43,6 +58,10 @@ pub fn interpret(
             Instruction::Return => {
                 if caller_stack.len() == 0 {
                     return Err(anyhow!("No caller to return to"));
+                }
+
+                if meth_calls.len() > 0 {
+                    meth_calls.pop();
                 }
 
                 instruction_index = caller_stack.pop().unwrap();
@@ -79,7 +98,6 @@ pub fn interpret(
             }
             Instruction::Compare(other) => {
                 let value = get_literal_value(other, memory);
-
                 memory[COMPARISON_ADDRESS] =
                     (memory[memory[ADDRESS_ADDRESS] as usize] == value) as u16;
             }
@@ -109,16 +127,30 @@ pub fn interpret(
             }
             Instruction::Jump(label) => {
                 caller_stack.push(instruction_index);
+                let value = get_literal_value(label, memory);
 
-                instruction_index = *labels.get(&get_literal_value(label, memory)).expect(
-                    format!(
-                        "Use of undeclared label {}",
-                        get_literal_value(label, memory)
-                    )
-                    .as_str(),
-                );
+                if let Some(meth_instruction_index) = functions.get(&value) {
+                    meth_calls.push(value);
+                    instruction_index = *meth_instruction_index;
+                } else if let Some(lab_instruction_index) = labels.get(&value) {
+                    instruction_index = *lab_instruction_index;
+                } else {
+                    return Err(anyhow!(format!("Unknown label/method {}", value)));
+                }
 
                 continue;
+            }
+            Instruction::Function(label) => {
+                let label = get_literal_value(label, memory);
+                if meth_calls.len() == 0 || meth_calls[meth_calls.len() - 1] != label.into() {
+                    while !matches!(instructions[instruction_index], Instruction::Return) {
+                        if instruction_index >= instructions.len() {
+                            return Err(anyhow!("RTN not found for method {}", label));
+                        }
+
+                        instruction_index += 1;
+                    }
+                }
             }
             _ => {}
         }

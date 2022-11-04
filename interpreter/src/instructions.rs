@@ -1,7 +1,7 @@
 use crate::Memory;
 use anyhow::{anyhow, Result};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
     Output,
     CharacterOutput,
@@ -24,6 +24,7 @@ pub enum Instruction {
     BranchIfEqual(Value),
     Jump(Value),
     Exit(Value),
+    Function(Value),
 }
 
 impl Instruction {
@@ -67,6 +68,7 @@ impl Instruction {
             Instruction::BranchIfEqual(value) => *value,
             Instruction::Jump(value) => *value,
             Instruction::Exit(value) => *value,
+            Instruction::Function(value) => *value,
             _ => panic!("Variant {:?} does not have a value", self),
         }
     }
@@ -97,6 +99,7 @@ impl Instruction {
             "BEQ" => Instruction::BranchIfEqual(value.expect("BEQ instruction requires value")),
             "JMP" => Instruction::Jump(value.expect("JMP instruction requires value")),
             "EXT" => Instruction::Exit(value.expect("EXT instruction requires value")),
+            "FUN" => Instruction::Function(value.expect("FUN instruction requires value")),
             _ => return Err(anyhow!("Unknown token {}", string)),
         });
     }
@@ -138,6 +141,7 @@ impl Instruction {
             0x12 => Instruction::BranchIfEqual(value.expect("BEQ instruction requires value")),
             0x13 => Instruction::Jump(value.expect("JMP instruction requires value")),
             0x14 => Instruction::Exit(value.expect("EXT instruction requires value")),
+            0x15 => Instruction::Function(value.expect("FUN instruction requires value")),
             _ => return Err(anyhow!("Unknown token {}", instruction)),
         })
     }
@@ -165,6 +169,7 @@ impl Instruction {
             Instruction::BranchIfEqual(_) => 0x12,
             Instruction::Jump(_) => 0x13,
             Instruction::Exit(_) => 0x14,
+            Instruction::Function(_) => 0x15,
         })
     }
 }

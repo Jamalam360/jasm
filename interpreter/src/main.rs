@@ -48,7 +48,7 @@ fn main() -> Result<()> {
             println!("--- Compiling file");
             let before_lex = Instant::now();
             let res = lex_str(&path)?;
-            let buf = compile(res.0)?;
+            let buf = compile(res)?;
             println!(
                 "--- Compiled in {}ms ({} microseconds)",
                 before_lex.elapsed().as_millis(),
@@ -75,7 +75,7 @@ fn main() -> Result<()> {
 
             println!(
                 "--- Lexed {} Instructions in {}ms ({} microseconds)",
-                res.0.len(),
+                res.len(),
                 before_lex.elapsed().as_millis(),
                 before_lex.elapsed().as_micros(),
             );
@@ -85,7 +85,7 @@ fn main() -> Result<()> {
 
             let before_interpret = Instant::now();
             let memory: &mut Memory = &mut [0u16; 65535];
-            let exit_code = interpret(&res.0, memory, &mut res.1)?;
+            let exit_code = interpret(memory, &mut res)?;
 
             println!("");
             println!("Program exited with code {}", exit_code);

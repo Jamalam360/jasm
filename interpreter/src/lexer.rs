@@ -1,7 +1,6 @@
 use crate::Value;
 use anyhow::{anyhow, Result};
 use std::{
-    collections::HashMap,
     fs::File,
     io::{self, BufRead, Read},
     path::Path,
@@ -9,9 +8,7 @@ use std::{
 
 use crate::instructions::Instruction;
 
-type LexedSource = (Vec<Instruction>, HashMap<u16, usize>);
-
-pub fn lex_str(path: &String) -> Result<LexedSource> {
+pub fn lex_str(path: &String) -> Result<Vec<Instruction>> {
     let mut instructions: Vec<Instruction> = Vec::new();
     let lines = read_lines(path)?;
     for line in lines {
@@ -68,19 +65,10 @@ pub fn lex_str(path: &String) -> Result<LexedSource> {
         instructions.push(Instruction::from_string(instruction, value)?);
     }
 
-    let labels: HashMap<u16, usize> = instructions
-        .iter()
-        .enumerate()
-        .filter_map(|(i, instruction)| match instruction {
-            Instruction::Label(Value::Literal(literal)) => Some((*literal, i)),
-            _ => None,
-        })
-        .collect();
-
-    Ok((instructions, labels))
+    Ok(instructions)
 }
 
-pub fn lex_bin(path: &String) -> Result<LexedSource> {
+pub fn lex_bin(path: &String) -> Result<Vec<Instruction>> {
     let mut instructions: Vec<Instruction> = Vec::new();
     let file = File::open(path)?;
     let mut reader = io::BufReader::new(file);
@@ -108,16 +96,7 @@ pub fn lex_bin(path: &String) -> Result<LexedSource> {
         instructions.push(instruction);
     }
 
-    let labels: HashMap<u16, usize> = instructions
-        .iter()
-        .enumerate()
-        .filter_map(|(i, instruction)| match instruction {
-            Instruction::Label(Value::Literal(literal)) => Some((*literal, i)),
-            _ => None,
-        })
-        .collect();
-
-    Ok((instructions, labels))
+    Ok(instructions)
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
